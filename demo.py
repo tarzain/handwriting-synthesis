@@ -140,9 +140,11 @@ class Hand(object):
             for x, y, eos in zip(*strokes.T):
                 p += '{}{},{} '.format('M' if prev_eos == 1.0 else 'L', x, y)
                 prev_eos = eos
-            path = svgwrite.path.Path(p)
-            path = path.stroke(color=color, width=width, linecap='round').fill("none")
-            dwg.add(path)
+                if eos==1.0:
+                    path = svgwrite.path.Path(p)
+                    path = path.stroke(color=color, width=width, linecap='round').fill("none")
+                    dwg.add(path)
+                    p = "M{},{} ".format(0, 0)
 
             initial_coord[1] -= line_height
 
@@ -154,15 +156,15 @@ if __name__ == '__main__':
 
     # usage demo
     lines = [
-        "Now this is a story all about how",
-        "My life got flipped turned upside down",
-        "And I'd like to take a minute, just sit right there",
-        "I'll tell you how I became the prince of a town called Bel-Air",
+        "Somewhere in the Universe it Rains Diamonds",
+        "{",
+        "  imageat: 0.78945678028720873082",
+        "}",
     ]
     biases = [.75 for i in lines]
     styles = [9 for i in lines]
-    stroke_colors = ['red', 'green', 'black', 'blue']
-    stroke_widths = [1, 2, 1, 2]
+    stroke_colors = ['black', 'black', 'black', 'black']
+    stroke_widths = [2, 2, 2, 2]
 
     hand.write(
         filename='img/usage_demo.svg',
@@ -171,40 +173,4 @@ if __name__ == '__main__':
         styles=styles,
         stroke_colors=stroke_colors,
         stroke_widths=stroke_widths
-    )
-
-    # demo number 1 - fixed bias, fixed style
-    lines = lyrics.all_star.split("\n")
-    biases = [.75 for i in lines]
-    styles = [12 for i in lines]
-
-    hand.write(
-        filename='img/all_star.svg',
-        lines=lines,
-        biases=biases,
-        styles=styles,
-    )
-
-    # demo number 2 - fixed bias, varying style
-    lines = lyrics.downtown.split("\n")
-    biases = [.75 for i in lines]
-    styles = np.cumsum(np.array([len(i) for i in lines]) == 0).astype(int)
-
-    hand.write(
-        filename='img/downtown.svg',
-        lines=lines,
-        biases=biases,
-        styles=styles,
-    )
-
-    # demo number 3 - varying bias, fixed style
-    lines = lyrics.give_up.split("\n")
-    biases = .2*np.flip(np.cumsum([len(i) == 0 for i in lines]), 0)
-    styles = [7 for i in lines]
-
-    hand.write(
-        filename='img/give_up.svg',
-        lines=lines,
-        biases=biases,
-        styles=styles,
     )
