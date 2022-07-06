@@ -1,13 +1,21 @@
 from __future__ import print_function
-from collections import deque
-from datetime import datetime
+
 import logging
 import os
 import pprint as pp
 import time
+from collections import deque
+from datetime import datetime
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+
+tf.disable_v2_behavior()
+import tensorflow_probability as tfp
+
+tfd = tfp.distributions
+import numpy as np
+from tensorflow import keras
 
 from tf_utils import shape
 

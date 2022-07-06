@@ -1,16 +1,14 @@
-import os
 import logging
+import os
 
 import numpy as np
 import svgwrite
 
 import drawing
-import lyrics
 from rnn import rnn
 
 
 class Hand(object):
-
     def __init__(self):
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
         self.nn = rnn(
@@ -117,7 +115,6 @@ class Hand(object):
 
         dwg = svgwrite.Drawing(filename=filename)
         dwg.viewbox(width=view_width, height=view_height)
-        dwg.add(dwg.rect(insert=(0, 0), size=(view_width, view_height), fill='white'))
 
         initial_coord = np.array([0, -(3*line_height / 4)])
         for offsets, line, color, width in zip(strokes, lines, stroke_colors, stroke_widths):
@@ -154,23 +151,25 @@ class Hand(object):
 if __name__ == '__main__':
     hand = Hand()
 
-    # usage demo
-    lines = [
-        "Somewhere in the Universe it Rains Diamonds",
-        "{",
-        "  imageat: 0.78945678028720873082",
-        "}",
-    ]
-    biases = [.75 for i in lines]
-    styles = [9 for i in lines]
-    stroke_colors = ['black', 'black', 'black', 'black']
-    stroke_widths = [2, 2, 2, 2]
-
-    hand.write(
-        filename='img/usage_demo.svg',
-        lines=lines,
-        biases=biases,
-        styles=styles,
-        stroke_colors=stroke_colors,
-        stroke_widths=stroke_widths
-    )
+    try:
+        lines = [line for line in [line.strip() for line in open('text.txt', 'r').readlines()] if len(line)]
+        print("writing: \n", lines)
+        biases = [0.9 for i in lines]
+        styles = [1+i%9 for i in range(len(lines))]
+        # colors of the rainbow in RGB
+        colors = ['black', 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
+        stroke_colors = [colors[i] for i in range(len(lines))]
+        stroke_widths = [1 for i in lines]
+        
+        print("Synthesizing handwriting...")
+        
+        hand.write(
+            filename='img/usage_demo.svg',
+            lines=lines,
+            biases=biases,
+            styles=styles,
+            stroke_colors=stroke_colors,
+            stroke_widths=stroke_widths
+        )
+    except KeyboardInterrupt:
+        pass

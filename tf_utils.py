@@ -1,4 +1,11 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+
+tf.disable_v2_behavior()
+import tensorflow_probability as tfp
+
+tfd = tfp.distributions
+import numpy as np
+from tensorflow import keras
 
 
 def dense_layer(inputs, output_units, bias=True, activation=None, batch_norm=None,
@@ -14,10 +21,10 @@ def dense_layer(inputs, output_units, bias=True, activation=None, batch_norm=Non
     Returns:
         Tensor of shape [batch size, output_units].
     """
-    with tf.variable_scope(scope, reuse=reuse):
+    with tf.compat.v1.variable_scope(scope, reuse=reuse):
         W = tf.get_variable(
             name='weights',
-            initializer=tf.contrib.layers.variance_scaling_initializer(),
+            initializer=tf.keras.initializers.VarianceScaling(),
             shape=[shape(inputs, -1), output_units]
         )
         z = tf.matmul(inputs, W)
@@ -54,10 +61,10 @@ def time_distributed_dense_layer(
     Returns:
         Tensor of shape [batch size, max sequence length, output_units].
     """
-    with tf.variable_scope(scope, reuse=reuse):
+    with tf.compat.v1.variable_scope(scope, reuse=reuse):
         W = tf.get_variable(
             name='weights',
-            initializer=tf.contrib.layers.variance_scaling_initializer(),
+            initializer=tf.keras.initializers.VarianceScaling(),
             shape=[shape(inputs, -1), output_units]
         )
         z = tf.einsum('ijk,kl->ijl', inputs, W)
